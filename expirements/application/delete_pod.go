@@ -3,7 +3,6 @@ package application
 import (
 	"context"
 	"errors"
-
 	//"sync"
 	//"time"
 	"github.com/redhat-appstudio/e2e-tests/pkg/framework"

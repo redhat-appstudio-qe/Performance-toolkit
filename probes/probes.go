@@ -24,3 +24,8 @@ func ProbeCreateHASApplication(ctx context.Context){
 	 errors.New("error! Application name doesnt match")
    }
  }
+	// New Generated Probe
+	func NodespikeProbe(ctx context.Context){
+		//Add your logic here
+		fmt.Println("this is a probe")
+	}

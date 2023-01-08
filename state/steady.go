@@ -39,11 +39,11 @@ func SteadyState(ctx context.Context) (context.Context, error) {
     
 	ctx = utils.SetTestNamespace(creatednamespace.Name, ctx)
 
-	Explist := expirements.CreateExpirementsList(ctx)
+	Explist := expirements.CreateExpirementsList()
 
 	ctx = context.WithValue(ctx, "ExperimentList", Explist)
 
-	ctx = expirements.PopulateEnvVars(ctx)
+	ctx = expirements.PopulateGlobalEnvVars(ctx)
 	
 	return ctx, nil
 

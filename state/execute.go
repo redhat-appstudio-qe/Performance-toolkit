@@ -40,13 +40,16 @@ func ExecuteExperiment(ctx context.Context, inject_chaos config.Inject, probe co
 	}
 }
 
+
 func Chaos(ctx context.Context){
 	explist := ctx.Value("ExperimentList").([]config.Expirement)
 	for i := 0; i < len(explist); i++ {
         fmt.Println("Running expirement:", explist[i].Name)
 		ctx = context.WithValue(ctx, "ProbeIntervalSecs", explist[i].ProbeIntervalSecs)
 		ctx = context.WithValue(ctx, "ChaosIteration", explist[i].ChaosIteration)
+		ctx = explist[i].Before(ctx)
 		ExecuteExperiment(ctx, explist[i].Inject, explist[i].Probe)
+		explist[i].After(ctx)
     }
 }
 

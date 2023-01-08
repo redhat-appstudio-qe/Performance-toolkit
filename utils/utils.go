@@ -18,6 +18,13 @@ func CheckVarExistsAndReturn(variable string) string {
   return v
 }
 
+func GetWorkingDir()string{
+	mydir, err := os.Getwd()
+    if err != nil {
+        fmt.Println(err)
+    }
+	return mydir
+}
 func SetKubeConfig(variable string) {
 	err := os.Setenv("KUBECONFIG", variable)
 	if err != nil{
