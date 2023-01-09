@@ -3,8 +3,41 @@ module github.com/redhat-appstudio-qe/performance-toolkit
 go 1.19
 
 require (
+	github.com/codeready-toolchain/toolchain-e2e v0.0.0-20220525131508-60876bfb99d3
 	github.com/redhat-appstudio/e2e-tests v0.0.0-20230105112603-14536bdb7f28
 	k8s.io/apimachinery v0.26.0
+)
+
+require (
+	github.com/BurntSushi/toml v0.4.1 // indirect
+	github.com/Masterminds/goutils v1.1.1 // indirect
+	github.com/Masterminds/semver/v3 v3.1.1 // indirect
+	github.com/Masterminds/sprig/v3 v3.2.2 // indirect
+	github.com/blang/semver/v4 v4.0.0 // indirect
+	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e // indirect
+	github.com/codeready-toolchain/toolchain-common v0.0.0-20220523142428-2558e76260fb // indirect
+	github.com/cucumber/gherkin-go/v19 v19.0.3 // indirect
+	github.com/cucumber/messages-go/v16 v16.0.1 // indirect
+	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32 // indirect
+	github.com/gofrs/uuid v4.2.0+incompatible // indirect
+	github.com/h2non/parth v0.0.0-20190131123155-b4df798d6542 // indirect
+	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
+	github.com/hashicorp/go-memdb v1.3.2 // indirect
+	github.com/hashicorp/golang-lru v0.5.4 // indirect
+	github.com/huandu/xstrings v1.3.2 // indirect
+	github.com/juju/ansiterm v0.0.0-20210929141451-8b71cc96ebdc // indirect
+	github.com/lunixbochs/vtclean v1.0.0 // indirect
+	github.com/manifoldco/promptui v0.8.0 // indirect
+	github.com/mitchellh/copystructure v1.2.0 // indirect
+	github.com/operator-framework/api v0.13.0 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/redhat-cop/operator-utils v1.3.3-0.20220121120056-862ef22b8cdf // indirect
+	github.com/shopspring/decimal v1.2.0 // indirect
+	github.com/spf13/cast v1.5.0 // indirect
+	github.com/stretchr/testify v1.8.1 // indirect
+	gopkg.in/h2non/gock.v1 v1.0.16 // indirect
+	k8s.io/kubectl v0.24.1 // indirect
+	k8s.io/metrics v0.24.1 // indirect
 )
 
 replace github.com/redhat-appstudio/managed-gitops/backend-shared => github.com/redhat-appstudio/managed-gitops/backend-shared v0.0.0-20220506042230-3a79f373a001
@@ -25,6 +58,7 @@ require (
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/codeready-toolchain/api v0.0.0-20220511141428-1adfed7d17b0 // indirect
 	github.com/containerd/containerd v1.6.10 // indirect
+	github.com/cucumber/godog v0.12.6
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/devfile/api/v2 v2.0.0-20211021164004-dabee4e633ed // indirect
 	github.com/devfile/library v1.2.1-0.20211104222135-49d635cb492f // indirect
@@ -65,7 +99,6 @@ require (
 	github.com/kcp-dev/apimachinery v0.0.0-20220912132244-efe716c18e43 // indirect
 	github.com/kcp-dev/logicalcluster/v2 v2.0.0-alpha.3 // indirect
 	github.com/klauspost/compress v1.15.11 // indirect
-	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
@@ -79,16 +112,16 @@ require (
 	github.com/onsi/gomega v1.24.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.0-rc2 // indirect
-	github.com/openshift/api v0.0.0-20220525145417-ee5b62754c68 // indirect
+	github.com/openshift/api v0.0.0-20220525145417-ee5b62754c68
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
-	github.com/pkg/errors v0.9.1 // indirect
-	github.com/prometheus/client_golang v1.13.0 // indirect
+	github.com/pkg/errors v0.9.1
+	github.com/prometheus/client_golang v1.13.0
 	github.com/prometheus/client_model v0.2.0 // indirect
-	github.com/prometheus/common v0.37.0 // indirect
+	github.com/prometheus/common v0.37.0
 	github.com/prometheus/procfs v0.8.0 // indirect
 	github.com/prometheus/statsd_exporter v0.21.0 // indirect
-	github.com/redhat-appstudio/application-api v0.0.0-20221114151952-77cba9006505 // indirect
+	github.com/redhat-appstudio/application-api v0.0.0-20221114151952-77cba9006505
 	github.com/redhat-appstudio/application-service v0.0.0-20221122170733-a852feca3998 // indirect
 	github.com/redhat-appstudio/integration-service v0.0.0-20220622135319-863425d2cad2 // indirect
 	github.com/redhat-appstudio/jvm-build-service v0.0.0-20221128055414-018f50a9d68e // indirect
@@ -132,14 +165,14 @@ require (
 	k8s.io/apiextensions-apiserver v0.25.2 // indirect
 	k8s.io/client-go v0.25.4 // indirect
 	k8s.io/component-base v0.25.2 // indirect
-	k8s.io/klog v1.0.0 // indirect
-	k8s.io/klog/v2 v2.80.1 // indirect
+	k8s.io/klog v1.0.0
+	k8s.io/klog/v2 v2.80.1
 	k8s.io/kube-openapi v0.0.0-20221012153701-172d655c2280 // indirect
 	k8s.io/utils v0.0.0-20221128185143-99ec85e7a448 // indirect
 	knative.dev/pkg v0.0.0-20221011175852-714b7630a836 // indirect
 	kubevirt.io/qe-tools v0.1.8 // indirect
 	oras.land/oras-go v0.4.0 // indirect
-	sigs.k8s.io/controller-runtime v0.14.1 // indirect
+	sigs.k8s.io/controller-runtime v0.14.1
 	sigs.k8s.io/json v0.0.0-20220713155537-f223a00ba0e2 // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.2.3 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect

@@ -7,6 +7,7 @@ const (
 	CHAOS_NAMESPACE string = "application-service"
 	POD_DELETE_LABEL_KEY string = "control-plane"
 	POD_DELETE_LABEL_VALUE string = "controller-manager"
+	USERNAME_PREFIX string = "loaduser"
 )
 
 type Inject func(ctx context.Context)

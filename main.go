@@ -21,9 +21,11 @@ func main(){
 
 //prettify - Done
 // create a generator -  done
-//add 3 tests - 2 added 1 pending
-// create metrics 
-// export to json 
+//add 3 tests - 2 added - done
+//Load tests move -done
+// create metrics - custom metrics (pending)
+// export to json - progress
 // continue on error
 // containerize 
+// report to dashboard - progress
 // introduce logging - later

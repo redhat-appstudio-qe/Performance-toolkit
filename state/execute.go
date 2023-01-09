@@ -6,14 +6,21 @@ import (
 	"time"
 
 	"github.com/redhat-appstudio-qe/performance-toolkit/config"
+	"github.com/redhat-appstudio-qe/performance-toolkit/metrics"
 )
 
 
-func ExecuteExperiment(ctx context.Context, inject_chaos config.Inject, probe config.Probe){
+func ExecuteExperiment(ctx context.Context, inject_chaos config.Inject, probe config.Probe) {
 	c1 := make(chan bool)
 	c2 := make(chan bool)
 	iterations := ctx.Value("ChaosIteration").(int)
 	tick := ctx.Value("ProbeIntervalSecs").(int)
+	
+	closeMetrics, metricsInstance := metrics.StartCollection(ctx)
+
+	ctx = context.WithValue(ctx, "closeMetrics", closeMetrics)
+	ctx = context.WithValue(ctx, "metricsInstance", metricsInstance)
+
 
 	go func ()  {
 		for {
@@ -38,6 +45,9 @@ func ExecuteExperiment(ctx context.Context, inject_chaos config.Inject, probe co
 		<-c1
 		<-c2
 	}
+
+	defer close(closeMetrics)
+	metricsInstance.PrintResults()
 }
 
 
