@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/fs"
 	"io/ioutil"
 	"log"
 	"os"
@@ -52,7 +53,7 @@ func ReplaceFileContents(name string, data string){
     }
 }
 
-func readfiletoappend(Name string, module string){
+func readfiletoappend(Name string, module string, Expname string){
     fileName := "expirements/featurelist.go"
     data, err := ioutil.ReadFile(fileName)
     if err != nil {
@@ -63,7 +64,7 @@ func readfiletoappend(Name string, module string){
     //fmt.Printf("\nData: %s", data)
 	Beforechange := strings.TrimSuffix(string(data), "}")
 	ReplaceFileContents(fileName, Beforechange)
-	AfterChange := utils.GetAppendFeatureTemplate(Name, module)
+	AfterChange := utils.GetAppendFeatureTemplate(Name, module, Expname)
 	OpenFileForWrite(fileName, AfterChange)
 	fmt.Println(".......................................")
 	fmt.Printf("Added Expirement to feature list")
@@ -90,12 +91,21 @@ func createHelperFunctions(Name string){
 
 }
 
+func getPresentExp(module string) []fs.FileInfo {
+	files, err := ioutil.ReadDir("expirements/"+module)
+    if err != nil {
+        log.Fatal(err)
+    }
+	return files
+}
+
 
 func main(){
 
 	var name string = "";
 	var option int = 0;
 	var Etype int = 0;
+	var OldExp int = 0;
 
 	fmt.Print("Enter Expirement Name(Avoid Spaces or special chars): ")
 	fmt.Scanf("%s", &name)
@@ -109,7 +119,9 @@ func main(){
 	fmt.Println("[3] Network Based")
 	fmt.Print("Choose an option:")
 	fmt.Scanf("%d", &Etype)
-
+	subPath := "expirements/" + SelectedType(Etype) + "/"
+	result := strings.ReplaceAll(name, " ", "")
+	MainFunction := strings.Title(result)
 	if option == 1{
 		fmt.Println("you have selected a fresh expirement of type: ", SelectedType(Etype))
 		fmt.Println("generating experiment file")
@@ -118,27 +130,50 @@ func main(){
 			log.Fatal("Invalid type selected")
 			os.Exit(1)	
 		}
-		subPath := "expirements/" + SelectedType(Etype) + "/"
-		result := strings.ReplaceAll(name, " ", "")
-		MainFunction := strings.Title(result)
+		
 		f, err := os.Create(subPath + result + ".go")
 		if err != nil {
 			log.Fatal(err)
 		}
 		defer f.Close()
 		_, err = f.WriteString(utils.GetExperimentTemplate(Selectedmodule, MainFunction))
+		if err != nil {
+			log.Fatal(err)
+		}
 		fmt.Println(".......................................")
 		fmt.Println("Generated Expirement File :", f.Name())
 		fmt.Println(".......................................")
-		fmt.Println("Generating Other Functions For the file:", f.Name())
+		fmt.Println("Generating Probes Functions For the file:", f.Name())
 		createHelperFunctions(MainFunction)
-		readfiletoappend(MainFunction, Selectedmodule)
+		readfiletoappend(MainFunction, Selectedmodule, MainFunction)
 		
 		
 		
+	} else if option == 2{
+		Selectedmodule := SelectedType(Etype)
+		if Selectedmodule == "Invalid"{
+			log.Fatal("Invalid type selected")
+			os.Exit(1)	
+		}
+		files := getPresentExp(Selectedmodule)
+		fmt.Println("Expirements Present in module are:")
+		for i :=0; i< len(files); i++ {
+			strtemp := fmt.Sprintf("[%d] %s",i, files[i].Name())
+			fmt.Println(strtemp)
+		}
+		fmt.Print("Choose an option:")
+		fmt.Scanf("%d", &OldExp)
+		SelectedExp := files[OldExp].Name()
+		SelectedExp = strings.Title(SelectedExp)
+		SelectedExp = SelectedExp[:len(SelectedExp)-3]
+		fmt.Println("Selected experiment is:", SelectedExp)
+		fmt.Println(".......................................")
+		fmt.Println("Generating Probes Functions For the file:", SelectedExp)
+		createHelperFunctions(MainFunction)
+		readfiletoappend(SelectedExp, Selectedmodule, MainFunction)
+
 	} else {
-		fmt.Println("you have selected a old expirement")
-		
+		log.Fatal("Invalid input!")
 	}
 }
 

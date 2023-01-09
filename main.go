@@ -20,8 +20,8 @@ func main(){
 }
 
 //prettify - Done
-// create a generator - flow chart done
-//add 3 tests 
+// create a generator -  done
+//add 3 tests - 2 added 1 pending
 // create metrics 
 // export to json 
 // continue on error

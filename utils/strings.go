@@ -75,21 +75,21 @@ func GetAfterTemplate(Name string) string {
 	return result
 }
 
-func GetAppendFeatureTemplate(Name string, module string) string {
+func GetAppendFeatureTemplate(Name string, module string, Expname string) string {
 	temp := `
 	//Generated New
 	{
-		Name: "%[1]v", 
-		Probe: probes.%[1]vProbe,
+		Name: "%[6]v", 
+		Probe: probes.%[6]vProbe,
 		Inject: %[2]v.%[1]vExperiment,
 		ChaosIteration: %[3]v,
 		ProbeIntervalSecs: %[4]v,
-		Before: common.%[1]vBefore,
-		After: common.%[1]vAfter,
+		Before: common.%[6]vBefore,
+		After: common.%[6]vAfter,
 		Weight: %[5]v,
 	},
 }`
-result := fmt.Sprintf(temp, Name, module, DEFAULT_CHAOS_ITERATION, DEFAULT_PROBE_INTERVAL_SECS, DEFAULT_WEIGHT)
+result := fmt.Sprintf(temp, Name, module, DEFAULT_CHAOS_ITERATION, DEFAULT_PROBE_INTERVAL_SECS, DEFAULT_WEIGHT, Expname)
 return result
 }
 
