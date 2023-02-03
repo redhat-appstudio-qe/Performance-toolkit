@@ -6,7 +6,7 @@ import (
 
 	"github.com/cucumber/godog"
 	"github.com/redhat-appstudio-qe/performance-toolkit/load-tests/steps"
-	"github.com/redhat-appstudio-qe/performance-toolkit/metrics"
+	// "github.com/redhat-appstudio-qe/performance-toolkit/metrics"
 	"github.com/redhat-appstudio/e2e-tests/pkg/framework"
 )
 
@@ -30,10 +30,10 @@ func BeforeScenarioHook(ctx context.Context, sc *godog.Scenario) (context.Contex
 
 	ctx = context.WithValue(ctx, "framework", framework)
 
-	closeMetrics, metricsInstance := metrics.StartCollection(ctx)
+	//closeMetrics, metricsInstance := metrics.StartCollection(ctx)
 
-	ctx = context.WithValue(ctx, "closeMetrics", closeMetrics)
-	ctx = context.WithValue(ctx, "metricsInstance", metricsInstance)
+	//ctx = context.WithValue(ctx, "closeMetrics", closeMetrics)
+	//ctx = context.WithValue(ctx, "metricsInstance", metricsInstance)
 	return ctx, nil
 }
 
@@ -60,6 +60,12 @@ func InitializeScenario(sc *godog.ScenarioContext) {
 	sc.Step(`^I should validate Has component detection query for "([^"]*)"$`, steps.CheckComponentDetectionQuery)
 	sc.Step(`^I should create Has component "([^"]*)"$`, steps.CreateComponent)
 	sc.Step(`^I should validate Has component "([^"]*)"$`, steps.CheckComponent)
+	sc.Step(`^I should Configure Batch Concurent Tests with max requests (\d+) and (\d+) batches$`, steps.ConfigureBatchConcurentTests)
+	sc.Step(`^I should run Batch Concurent Tests with "([^"]*)"$`, steps.StartBatchConcurentTests)
+	sc.Step(`^I should Configure Infinite Concurent Tests with RPS (\d+) and timeout of (\d+) secs$`, steps.ConfigureInfiniteConcurentTests)
+	sc.Step(`^I should run Infinite Concurent Tests with "([^"]*)"$`, steps.StartInfiniteConcurentTests)
+	sc.Step(`^I should Configure Spike Concurent Tests with max RPS (\d+) and timeout of (\d+) secs$$`, steps.ConfigureSpikeConcurentTests)
+	sc.Step(`^I should run Spike Concurent Tests with "([^"]*)"$`, steps.StartSpikeConcurentTests)
 
 }
 

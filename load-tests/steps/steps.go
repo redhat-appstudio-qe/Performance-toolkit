@@ -4,12 +4,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
+	// "log"
 	"time"
 
 	"github.com/codeready-toolchain/toolchain-e2e/setup/users"
 	"github.com/codeready-toolchain/toolchain-e2e/setup/wait"
+	controller "github.com/redhat-appstudio-qe/concurency-controller/controller"
 	config "github.com/redhat-appstudio-qe/performance-toolkit/config"
 	metrics "github.com/redhat-appstudio-qe/performance-toolkit/metrics/getters"
+	localutils "github.com/redhat-appstudio-qe/performance-toolkit/utils"
 	appservice "github.com/redhat-appstudio/application-api/api/v1alpha1"
 	"github.com/redhat-appstudio/e2e-tests/pkg/constants"
 	"github.com/redhat-appstudio/e2e-tests/pkg/framework"
@@ -19,9 +23,57 @@ import (
 
 type godogsCtxKey struct{}
 
+type Concurent struct{
+	Framework *framework.Framework
+	GlobalCtx context.Context
+	Controller  *controller.LoadController
+}
+
+type InnerTestVars struct {
+	component string
+	user string
+
+}
+
+func NewConcurent(Framework *framework.Framework, GlobalCtx context.Context,Controller  *controller.LoadController) (*Concurent) {
+	return &Concurent{Framework: Framework, GlobalCtx: GlobalCtx, Controller: Controller}
+}
+
 var (
 	AverageUserCreationTime time.Duration
+	ConcurentCtx *Concurent
 )
+
+func SimpleTest() error {
+	ctx := ConcurentCtx.GlobalCtx
+	user := localutils.RandomString(config.USERNAME_PREFIX)
+	framework := ctx.Value("framework").(*framework.Framework)
+	err := CreateConcurentUser(framework, user)
+	if err != nil{
+		return err
+	}
+	return nil
+}
+
+func ConcurrentTestRunner() error {
+	ctx := ConcurentCtx.GlobalCtx
+	user := localutils.RandomString(config.USERNAME_PREFIX)
+	framework := ctx.Value("framework").(*framework.Framework)
+	err := CreateConcurentUser(framework, user)
+	if err != nil{
+		return err
+	}
+	ctx, err = CreateAppstudioApp(ctx, framework, user)
+	if err != nil {
+		return err
+	}
+	devfile := ctx.Value("devfile").(string)
+	ctx, err = CreateAppstudioComponents(ctx, framework, user, devfile)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 func IsPhysicalSystemRunning(ctx context.Context) (context.Context, error) {
   return ctx,nil
@@ -38,6 +90,7 @@ func WaitforSecs(ctx context.Context, secs int64) (context.Context, error){
 }
 
 
+
 func CreateNS(ctx context.Context, namespace string) (context.Context, error){
   framework := ctx.Value("framework").(*framework.Framework)
   creatednamespace, err := framework.CommonController.CreateTestNamespace(namespace)
@@ -47,35 +100,132 @@ func CreateNS(ctx context.Context, namespace string) (context.Context, error){
   return context.WithValue(ctx, "ns", creatednamespace.Name), nil
 }
 
-func CreateResourcesConcurently()(error){
+func ConfigureBatchConcurentTests(ctx context.Context, MaxReq int, Batches int){
+	URL := localutils.CheckVarExistsAndReturn("MONITORING_URL", false)
+	c := controller.NewLoadController(MaxReq, Batches, URL)
+	framework := ctx.Value("framework").(*framework.Framework)
+	context := ctx
+	ConcurentCtx = NewConcurent(framework, context, c)
+	
+}
+
+func ConfigureInfiniteConcurentTests(ctx context.Context, RPS int, TimeoutSecs int){
+	URL := localutils.CheckVarExistsAndReturn("MONITORING_URL", false)
+	Timeout := localutils.ToDuration(TimeoutSecs)
+	c := controller.NewInfiniteLoadController(Timeout, RPS, URL)
+	framework := ctx.Value("framework").(*framework.Framework)
+	context := ctx
+	ConcurentCtx = NewConcurent(framework, context, c)
+	
+}
+func ConfigureSpikeConcurentTests(ctx context.Context, RPS int, TimeoutSecs int){
+	URL := localutils.CheckVarExistsAndReturn("MONITORING_URL", false)
+	Timeout := localutils.ToDuration(TimeoutSecs)
+	c := controller.NewSpikeLoadController(Timeout, RPS , 0.5, URL)
+	framework := ctx.Value("framework").(*framework.Framework)
+	context := ctx
+	ConcurentCtx = NewConcurent(framework, context, c)
+	
+}
+
+func StartBatchConcurentTests(ctx context.Context, cmp string){
+	c := ConcurentCtx.Controller
+	ConcurentCtx.GlobalCtx = context.WithValue(ConcurentCtx.GlobalCtx, "devfile", cmp)
+	c.ConcurentlyExecute(SimpleTest)
+}
+
+func StartInfiniteConcurentTests(ctx context.Context, cmp string){
+	c := ConcurentCtx.Controller
+	ConcurentCtx.GlobalCtx = context.WithValue(ConcurentCtx.GlobalCtx, "devfile", cmp)
+	c.ConcurentlyExecuteInfinite(ConcurrentTestRunner)
+}
+
+func StartSpikeConcurentTests(ctx context.Context, cmp string){
+	c := ConcurentCtx.Controller
+	ConcurentCtx.GlobalCtx = context.WithValue(ConcurentCtx.GlobalCtx, "devfile", cmp)
+	c.CuncurentlyExecuteSpike(SimpleTest)
+}
+
+func CreateConcurentUser(framework *framework.Framework, user string) error {
+	startTime := time.Now()
+	err := users.Create(framework.CommonController.KubeRest(), user, 
+		constants.HostOperatorNamespace, constants.MemberOperatorNamespace)
+	if err != nil {
+		return err
+	}
+	if err := wait.ForNamespace(framework.CommonController.KubeRest(), user); err != nil {
+		klog.Fatalf("failed to find namespace '%s'", user)
+		return err
+	}
+	UserCreationTime := time.Since(startTime)
+	klog.Infof("User Created in:", UserCreationTime)
 	return nil
 }
 
-
-func CreateUsers(ctx context.Context, number int)(context.Context){
-	startTime := time.Now()
-	ctx = context.WithValue(ctx, "NumberOfUsers", number)
-	framework := ctx.Value("framework").(*framework.Framework)
-	userprefix := config.USERNAME_PREFIX
-	for i:=1;i<=number;i++{
-		username := fmt.Sprintf("%s-%04d", userprefix, i)
-		if err := users.Create(framework.CommonController.KubeRest(), username, constants.HostOperatorNamespace, constants.MemberOperatorNamespace); err != nil {
-			klog.Fatalf("failed to provision user '%s'", username)
-			klog.Errorf(err.Error())
-		}
-		if err := wait.ForNamespace(framework.CommonController.KubeRest(), username); err != nil {
-			klog.Fatalf("failed to find namespace '%s'", username)
-			klog.Errorf(err.Error())
-		}
-		UserCreationTime := time.Since(startTime)
-		AverageUserCreationTime += UserCreationTime
+func CreateAppstudioApp(Ctx context.Context, framework *framework.Framework, user string) (context.Context, error) {
+	ApplicationName := fmt.Sprintf("%s-app", user)
+	_, errors := framework.CommonController.CreateRegistryAuthSecret(
+		"redhat-appstudio-registry-pull-secret",
+		user,
+		utils.GetDockerConfigJson(),
+	)
+	if errors != nil {
+		klog.Infof("Problem Creating the secret: %v", errors)
+		return Ctx, errors
 	}
-	ctx = context.WithValue(ctx, "UserCreationTime", AverageUserCreationTime)
+	app, err := framework.HasController.CreateHasApplication(ApplicationName, user)
+	if err != nil {
+		klog.Info("Problem Creating the Application: %v", err)
+		return Ctx, err
+	}
+	if err := utils.WaitUntil(framework.CommonController.ApplicationGitopsRepoExists(app.Status.Devfile), 30*time.Second); err != nil {
+		klog.Infof("timed out waiting for application gitops repo to be created: %v", err)
+		return Ctx, err
+	}
+	
+	return context.WithValue(Ctx, "app", app.Name), nil
+}
 
-	return ctx
+func CreateAppstudioComponents(Ctx context.Context, framework *framework.Framework, user string, component string) (context.Context, error) {
+	gitSource := parseDevfileSource(component)
+	ComponentName := fmt.Sprintf("%s-component", user)
+	app := Ctx.Value("app").(string)
+	_, err := framework.HasController.CreateComponentDetectionQuery(ComponentName, user, gitSource, "", false)
+	if err != nil {
+		klog.Infof("error: %v", err)
+		return Ctx, err
+	}
+	time.Sleep(3 * time.Second)
+	compDetected := appservice.ComponentDetectionDescription{}
+	cdqD, err := framework.HasController.GetComponentDetectionQuery(ComponentName, user)
+	if err != nil {
+		klog.Infof("error! cannot get cdq")
+		return Ctx, err
+	}
+	for _, compDetected = range cdqD.Status.ComponentDetected {
+		if !compDetected.DevfileFound {
+			klog.Infof("error! Devfile not found")
+			return Ctx, err
+		}
+		
+	}
+	cmp, errs := framework.HasController.CreateComponentFromStub(compDetected, ComponentName, user, "", app)
+	if errs != nil {
+		klog.Infof("error! cannot create component %v", err)
+		return Ctx, errs
+	}
 
+	CreatedCmp, err := framework.HasController.GetHasComponent(cmp.Name, user)
+	if err != nil {
+		klog.Fatalf("error! cannot get component %v", err)
+		return Ctx, err
+	}
+
+	return context.WithValue(Ctx, "component", CreatedCmp.Name), nil
 	
 }
+
+
 
 func CreateResources(ctx context.Context, cmp string)(context.Context){
 	framework := ctx.Value("framework").(*framework.Framework)
@@ -239,6 +389,31 @@ func CheckComponent(ctx context.Context, componentName string)(context.Context, 
     return ctx, errors.New("error! cannot get has component")
   }
   return context.WithValue(ctx, "component", componet), nil
+}
+
+func CreateUsers(ctx context.Context, number int)(context.Context){
+	startTime := time.Now()
+	ctx = context.WithValue(ctx, "NumberOfUsers", number)
+	framework := ctx.Value("framework").(*framework.Framework)
+	userprefix := config.USERNAME_PREFIX
+	for i:=1;i<=number;i++{
+		username := fmt.Sprintf("%s-%04d", userprefix, i)
+		if err := users.Create(framework.CommonController.KubeRest(), username, constants.HostOperatorNamespace, constants.MemberOperatorNamespace); err != nil {
+			klog.Fatalf("failed to provision user '%s'", username)
+			klog.Errorf(err.Error())
+		}
+		if err := wait.ForNamespace(framework.CommonController.KubeRest(), username); err != nil {
+			klog.Fatalf("failed to find namespace '%s'", username)
+			klog.Errorf(err.Error())
+		}
+		UserCreationTime := time.Since(startTime)
+		AverageUserCreationTime += UserCreationTime
+	}
+	ctx = context.WithValue(ctx, "UserCreationTime", AverageUserCreationTime)
+
+	return ctx
+
+	
 }
 
 
