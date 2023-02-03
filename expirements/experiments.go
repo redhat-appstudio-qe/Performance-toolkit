@@ -15,8 +15,3 @@ func PopulateGlobalEnvVars(ctx context.Context) context.Context{
 	// add global vars here
 	return ctx
 }
-
-
-
-
-

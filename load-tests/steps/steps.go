@@ -47,6 +47,11 @@ func CreateNS(ctx context.Context, namespace string) (context.Context, error){
   return context.WithValue(ctx, "ns", creatednamespace.Name), nil
 }
 
+func CreateResourcesConcurently()(error){
+	return nil
+}
+
+
 func CreateUsers(ctx context.Context, number int)(context.Context){
 	startTime := time.Now()
 	ctx = context.WithValue(ctx, "NumberOfUsers", number)
