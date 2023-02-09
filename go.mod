@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/codeready-toolchain/toolchain-e2e v0.0.0-20230201081624-0fc8f511c086
+	github.com/redhat-appstudio-qe/concurency-controller v0.0.0-20230207101043-73af2fa01620
 	github.com/redhat-appstudio/e2e-tests v0.0.0-20230202172044-74441762ff36
 	k8s.io/apimachinery v0.26.0
 )

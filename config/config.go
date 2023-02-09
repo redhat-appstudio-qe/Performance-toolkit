@@ -8,6 +8,10 @@ const (
 	POD_DELETE_LABEL_KEY string = "control-plane"
 	POD_DELETE_LABEL_VALUE string = "controller-manager"
 	USERNAME_PREFIX string = "load"
+	QuarkusDevfileSource string = "https://github.com/devfile-samples/devfile-sample-code-with-quarkus"
+  	NodejsDevfileSource string = "https://github.com/sawood14012/simple-nodejs-app"
+	PythonDevfileSource string = "https://github.com/devfile-samples/devfile-sample-python-basic"
+	DotnetDevfileSource string = "https://github.com/devfile-samples/devfile-sample-dotnet60-basic"
 )
 
 type Inject func(ctx context.Context)

@@ -6,41 +6,32 @@ import (
 
 	"github.com/cucumber/godog"
 	"github.com/redhat-appstudio-qe/performance-toolkit/load-tests/steps"
-	// "github.com/redhat-appstudio-qe/performance-toolkit/metrics"
+	"github.com/redhat-appstudio-qe/performance-toolkit/metrics"
 	"github.com/redhat-appstudio/e2e-tests/pkg/framework"
 )
 
-var (
-	kcp_config string
-	cluster_config string
-)
 func BeforeSuite(){
 	//Add logic here!
-	//kcp_config = utils.CheckVarExistsAndReturn("KCP_KUBECONFIG")
-	//cluster_config = utils.CheckVarExistsAndReturn("CLUSTER_KUBECONFIG")
 }
 
 func BeforeScenarioHook(ctx context.Context, sc *godog.Scenario) (context.Context, error) {
-	//ctx = context.WithValue(ctx, "kcp_config", kcp_config)
-	//ctx = context.WithValue(ctx, "cluster_config", cluster_config)
 	framework, err := framework.NewFramework()
 	if err != nil {
-		return ctx, errors.New("Connection Error")
+		return ctx, errors.New("connection error")
 	}
 
+	
 	ctx = context.WithValue(ctx, "framework", framework)
 
-	//closeMetrics, metricsInstance := metrics.StartCollection(ctx)
+	closeMetrics, metricsInstance := metrics.StartCollection(ctx)
 
-	//ctx = context.WithValue(ctx, "closeMetrics", closeMetrics)
-	//ctx = context.WithValue(ctx, "metricsInstance", metricsInstance)
+	ctx = context.WithValue(ctx, "closeMetrics", closeMetrics)
+	ctx = context.WithValue(ctx, "metricsInstance", metricsInstance)
 	return ctx, nil
 }
 
 func AfterSuite() {
 	// Add Cleanup logic!
-
-
 }
 
 
@@ -48,24 +39,13 @@ func InitializeScenario(sc *godog.ScenarioContext) {
 
 	sc.Before(BeforeScenarioHook)
 	sc.Step(`^system is running`, steps.IsPhysicalSystemRunning)
-	//sc.Step(`^I should create test namespace "([^"]*)"$`, steps.CreateNS)
-	sc.Step(`^I should create (\d+) appstudio users$`, steps.CreateUsers)
-	sc.Step(`^I should create user resources with "([^"]*)" component$`, steps.CreateResources)
-	sc.Step(`^I should be able to print metrics`, steps.PrintMetrics)
-	sc.Step(`^I should create Has Application "([^"]*)"$`, steps.CreateHasApp)
-	sc.Step(`^I should validate Has Application "([^"]*)"$`, steps.CheckHasApp)
-	sc.Step(`^I should wait for (\d+) min$`, steps.WaitforMins)
-	sc.Step(`^I should wait for (\d+) seconds$`, steps.WaitforSecs)
-	sc.Step(`^I should create Has component detection query "([^"]*)" with "([^"]*)"$`, steps.CreateCompoenetDetectionQuery)
-	sc.Step(`^I should validate Has component detection query for "([^"]*)"$`, steps.CheckComponentDetectionQuery)
-	sc.Step(`^I should create Has component "([^"]*)"$`, steps.CreateComponent)
-	sc.Step(`^I should validate Has component "([^"]*)"$`, steps.CheckComponent)
 	sc.Step(`^I should Configure Batch Concurent Tests with max requests (\d+) and (\d+) batches$`, steps.ConfigureBatchConcurentTests)
 	sc.Step(`^I should run Batch Concurent Tests with "([^"]*)"$`, steps.StartBatchConcurentTests)
 	sc.Step(`^I should Configure Infinite Concurent Tests with RPS (\d+) and timeout of (\d+) secs$`, steps.ConfigureInfiniteConcurentTests)
 	sc.Step(`^I should run Infinite Concurent Tests with "([^"]*)"$`, steps.StartInfiniteConcurentTests)
 	sc.Step(`^I should Configure Spike Concurent Tests with max RPS (\d+) and timeout of (\d+) secs$$`, steps.ConfigureSpikeConcurentTests)
 	sc.Step(`^I should run Spike Concurent Tests with "([^"]*)"$`, steps.StartSpikeConcurentTests)
+	sc.Step(`^I should Stop And Print Metrics`, steps.PrintMetrics)
 
 }
 

@@ -1,11 +1,22 @@
-export DOCKER_CONFIG_JSON=
+#!/bin/bash
 
-export GITHUB_E2E_ORGANIZATION=app-studio-test
+# Load environment variables from .env file
+while read line; do
+  if echo "$line" | grep -F = &>/dev/null; then
+    export "$line"
+  fi
+done < .env
 
-export GITHUB_TOKEN=
+# Check if required environment variables are set
+if [ -z "$DOCKER_CONFIG_JSON" ] || [ -z "$QUAY_TOKEN" ] || [ -z "$MY_GITHUB_ORG" ] || [ -z "$GITHUB_TOKEN" ] || [ -z "$QUAY_E2E_ORGANIZATION" ]; then
+  echo "Error: One or more required environment variables are not set."
+  exit 1
+fi
 
-export MONITORING_URL=http://ingester-performance-monitoring.apps.msawood.tklx.p1.openshiftapps.com
+# Check if MONITORING_URL is set
+if [ -z "$MONITORING_URL" ]; then
+  echo "Monitoring instance is not set, running the test without pushing metrics"
+fi
 
-if [ -z ${DOCKER_CONFIG_JSON+x} ]; then echo "env DOCKER_CONFIG_JSON need to be defined"; exit 1;  else echo "DOCKER_CONFIG_JSON is set"; fi
-
-go test -test.v -test.run ^TestFeatures$
+# Run go test command
+go test -timeout 30m -test.v -test.run ^TestFeatures$
