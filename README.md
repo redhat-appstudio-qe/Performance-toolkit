@@ -7,8 +7,8 @@ The load testing scripts in this repository are designed to simulate real-world 
 
 This repository is an example of the use of modern DevOps practices, as it helps organizations identify and fix potential problems in the StoneSoup system before they cause production issues. The scripts are designed to help teams ensure the stability and reliability of the StoneSoup system.
 
-- Chaos Testing Docs: 
-- Load Testing Docs: 
+- Chaos Testing Docs: [Click here](https://github.com/redhat-appstudio-qe/performance-toolkit/blob/main/docs/Chaos.md)
+- Load Testing Docs: [Click here](https://github.com/redhat-appstudio-qe/performance-toolkit/blob/main/docs/Loadtests.md)
 
 
 ## TODO's

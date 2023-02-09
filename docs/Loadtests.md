@@ -1,7 +1,7 @@
 
 # Stone Soup Load Tests 
 
-Load Tests utilizes a combination of goDog framework and the concurency-controller module to run different type of concurent tests on stone soup 
+Load Tests utilizes a combination of goDog framework and the [concurency-controller](https://github.com/redhat-appstudio-qe/concurency-controller) module to run different type of concurent tests on stone soup 
 
 ### Directory Structure 
 ```
@@ -31,7 +31,7 @@ this folder contains all the feature files of gherkin files what goDog runs , th
 
 This is the directory you can utilize to store your function implimentations that together combined will work as a scenario also note that steps are reusable throught the test/scenarios
 
-To understand more please look at https://github.com/cucumber/godog 
+To understand more please look at [godog](https://github.com/cucumber/godog)
 
 ## Run Load Tests 
 
