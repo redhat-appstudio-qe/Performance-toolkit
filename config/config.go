@@ -8,6 +8,7 @@ const (
 	POD_DELETE_LABEL_KEY string = "control-plane"
 	POD_DELETE_LABEL_VALUE string = "controller-manager"
 	USERNAME_PREFIX string = "load"
+	Quay_token string = "QUAY_TOKEN"
 	QuarkusDevfileSource string = "https://github.com/devfile-samples/devfile-sample-code-with-quarkus"
   	NodejsDevfileSource string = "https://github.com/sawood14012/simple-nodejs-app"
 	PythonDevfileSource string = "https://github.com/devfile-samples/devfile-sample-python-basic"

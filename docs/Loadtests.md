@@ -66,3 +66,16 @@ To start the test run
   ./run.sh
 ```
 
+#### Clean up 
+
+To clear users created 
+
+```bash 
+make -C /tmp/toolchain-e2e clean-users
+```
+
+To Clear the Repositories created in github org 
+
+```bash 
+GITHUB_TOKEN={TOKEN} ./clear.sh
+```
