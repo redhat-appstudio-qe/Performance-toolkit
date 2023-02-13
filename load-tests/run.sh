@@ -8,7 +8,7 @@ while read line; do
 done < .env
 
 # Check if required environment variables are set
-if [ -z "$DOCKER_CONFIG_JSON" ] || [ -z "$QUAY_TOKEN" ] || [ -z "$MY_GITHUB_ORG" ] || [ -z "$GITHUB_TOKEN" ] || [ -z "$QUAY_E2E_ORGANIZATION" ]; then
+if [ -z "$QUAY_TOKEN" ] || [ -z "$MY_GITHUB_ORG" ] || [ -z "$GITHUB_TOKEN" ] || [ -z "$QUAY_E2E_ORGANIZATION" ]; then
   echo "Error: One or more required environment variables are not set."
   exit 1
 fi

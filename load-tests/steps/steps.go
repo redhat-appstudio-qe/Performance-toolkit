@@ -70,11 +70,23 @@ func ConcurrentBatchTestRunner() error {
 	return ConcurentTest(framework, user, devfile)
 }
 
+func ConcurrentBatchTestRunnerOnlyUsers() error {
+	user := localutils.RandomString(config.USERNAME_PREFIX)
+	framework := ConcurentBatchCtx.Framework
+	return ConcurentTestOnlyUsers(framework, user)
+}
+
 func ConcurrentInfiniteTestRunner() error {
 	user := localutils.RandomString(config.USERNAME_PREFIX)
 	framework := ConcurentInfiniteCtx.Framework
 	devfile := ConcurentInfiniteCtx.GlobalCtx.Value("devfile").(string)
 	return ConcurentTest(framework, user, devfile)
+}
+
+func ConcurrentInfiniteTestRunnerOnlyUsers() error {
+	user := localutils.RandomString(config.USERNAME_PREFIX)
+	framework := ConcurentInfiniteCtx.Framework
+	return ConcurentTestOnlyUsers(framework, user)
 }
 
 func ConcurrentSpikeTestRunner() error {
@@ -83,6 +95,22 @@ func ConcurrentSpikeTestRunner() error {
 	devfile := ConcurentSpikeCtx.GlobalCtx.Value("devfile").(string)
 	return ConcurentTest(framework, user, devfile)
 }
+
+func ConcurrentSpikeTestRunnerOnlyUsers() error {
+	user := localutils.RandomString(config.USERNAME_PREFIX)
+	framework := ConcurentSpikeCtx.Framework
+	return ConcurentTestOnlyUsers(framework, user)
+}
+
+func ConcurentTestOnlyUsers(framework *framework.Framework, user string) error {
+	namespace := user + "-tenant"
+	err := CreateConcurentUser(framework, user, namespace)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 
 func ConcurentTest(framework *framework.Framework, user string, devfile string) error {
 	namespace := user + "-tenant"
@@ -158,6 +186,21 @@ func StartSpikeConcurentTests(ctx context.Context, cmp string){
 	c.CuncurentlyExecuteSpike(ConcurrentSpikeTestRunner)
 }
 
+func StartBatchConcurentUserTests(ctx context.Context){
+	c := ConcurentBatchCtx.Controller
+	c.ConcurentlyExecute(ConcurrentBatchTestRunnerOnlyUsers)
+}
+
+func StartInfiniteConcurentUserTests(ctx context.Context){
+	c := ConcurentInfiniteCtx.Controller
+	c.ConcurentlyExecuteInfinite(ConcurrentInfiniteTestRunnerOnlyUsers)
+}
+
+func StartSpikeConcurentUserTests(ctx context.Context){
+	c := ConcurentSpikeCtx.Controller
+	c.CuncurentlyExecuteSpike(ConcurrentSpikeTestRunnerOnlyUsers)
+}
+
 func CreateConcurentUser(framework *framework.Framework, user string, namespace string) (error) {
 	err := users.Create(framework.CommonController.KubeRest(), user, 
 		constants.HostOperatorNamespace, constants.MemberOperatorNamespace)
@@ -175,7 +218,7 @@ func CreateAppstudioApp(framework *framework.Framework, namespace string) (strin
 	_, errors := framework.CommonController.CreateRegistryAuthSecret(
 		"redhat-appstudio-registry-pull-secret",
 		namespace,
-		utils.GetDockerConfigJson(),
+		localutils.CheckVarExistsAndReturn(config.Quay_token, true),
 	)
 	if errors != nil {
 		klog.Infof("Problem Creating the secret: %v", errors)
