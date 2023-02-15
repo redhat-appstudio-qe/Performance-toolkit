@@ -281,7 +281,7 @@ func CreateAppstudioComponentsSTUB(app string, framework *framework.Framework, n
 		}
 		
 	}
-	cmp, errs := framework.HasController.CreateComponentFromStub(compDetected, ComponentName, namespace, "", app)
+	cmp, errs := framework.HasController.CreateComponentFromStub(compDetected, ComponentName, namespace, "", app, "")
 	if errs != nil {
 		klog.Infof("error! cannot create component %v", err)
 		return "", errs

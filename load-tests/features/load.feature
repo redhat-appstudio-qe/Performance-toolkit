@@ -2,7 +2,7 @@ Feature: Load Tests For AppStudio
 
   Scenario: Only Create Users 
     Given system is running
-    Then I should Configure Infinite Concurent Tests with RPS 15 and timeout of 10 secs
+    Then I should Configure Infinite Concurent Tests with RPS 20 and timeout of 10 secs
     Then I should ramp up users with infinite controller
     Then I should Stop And Print Metrics
 
